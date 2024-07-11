@@ -9,20 +9,20 @@ const server = express();
 
 const whitelist = ['http://localhost:3000']
 
-const corsOptions = {
-  origin: function (origin: any, callback: any) {
-    if (whitelist.indexOf(origin) !== -1) {
-      callback(null, true)
-    } else {
-      callback(new Error('Not allowed by CORS'))
-    }},
-    credentials: true
-}
+// const corsOptions = {
+//   origin: function (origin: any, callback: any) {
+//     if (whitelist.indexOf(origin) !== -1) {
+//       callback(null, true)
+//     } else {
+//       callback(new Error('Not allowed by CORS'))
+//     }},
+//     credentials: true
+// }
 
 
 // Middlewares
 server.use(express.json());
-server.use(cors(corsOptions));
+server.use(cors());
 server.use(cookieParser())
 
 server.use(errorHandlers);
