@@ -5,6 +5,7 @@ import userRouter from "./routes/userRoute";
 import { errorHandlers } from './middlewares/errorHandler'
 
 ;
+import fileRouter from "./routes/fileRoute";
 const server = express();
 
 const whitelist = ['http://localhost:3000']
@@ -31,6 +32,7 @@ server.use(errorHandlers);
 
 // Routes
 server.use('/user', userRouter);
+server.use('/file', fileRouter);
 
 export { server };
 
