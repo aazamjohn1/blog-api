@@ -1,12 +1,11 @@
-import express from "express";
-import cors from "cors";
+import express from 'express'
+import cors from 'cors'
 import cookieParser from 'cookie-parser'
-import userRouter from "./routes/userRoute";
+import userRouter from './routes/userRoute'
 import { errorHandlers } from './middlewares/errorHandler'
-
-;
-import fileRouter from "./routes/fileRoute";
-const server = express();
+import fileRouter from './routes/fileRoute'
+import axRouter from './routes/axRoute'
+const server = express()
 
 const whitelist = ['http://localhost:3000']
 
@@ -20,20 +19,16 @@ const whitelist = ['http://localhost:3000']
 //     credentials: true
 // }
 
-
 // Middlewares
-server.use(express.json());
-server.use(cors());
+server.use(express.json())
+server.use(cors())
 server.use(cookieParser())
 
-server.use(errorHandlers);
-
-
+server.use(errorHandlers)
 
 // Routes
-server.use('/user', userRouter);
-server.use('/file', fileRouter);
+server.use('/user', userRouter)
+server.use('/file', fileRouter)
+server.use('/ax', axRouter)
 
-export { server };
-
-
+export { server }
