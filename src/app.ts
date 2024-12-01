@@ -5,6 +5,7 @@ import userRouter from './routes/userRoute'
 import { errorHandlers } from './middlewares/errorHandler'
 import fileRouter from './routes/fileRoute'
 import axRouter from './routes/axRoute'
+import axGameRoute from './routes/axGameRoute'
 const server = express()
 
 const whitelist = ['http://localhost:3000']
@@ -30,5 +31,6 @@ server.use(errorHandlers)
 server.use('/user', userRouter)
 server.use('/file', fileRouter)
 server.use('/ax', axRouter)
+server.use('/ax', axGameRoute)
 
 export { server }

@@ -32,3 +32,5 @@ axGameRoute.get('/api/get-leaderboard', async (req, res) => {
 		.limit(10)
 	res.json(leaderboard)
 })
+
+export default axGameRoute
