@@ -3,9 +3,10 @@ import cors from 'cors'
 import cookieParser from 'cookie-parser'
 import userRouter from './routes/userRoute'
 import { errorHandlers } from './middlewares/errorHandler'
-import fileRouter from './routes/fileRoute'
+import fileRouter from './routes/blogRoute'
 import axRouter from './routes/axRoute'
 import axGameRoute from './routes/axGameRoute'
+import blogRouter from './routes/blogRoute'
 const server = express()
 
 const whitelist = ['http://localhost:3000']
@@ -29,7 +30,7 @@ server.use(errorHandlers)
 
 // Routes
 server.use('/user', userRouter)
-server.use('/file', fileRouter)
+server.use('/blogs', blogRouter)
 server.use('/ax', axRouter)
 server.use('/ax', axGameRoute)
 
