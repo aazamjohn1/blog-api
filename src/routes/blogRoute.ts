@@ -48,7 +48,7 @@ blogRouter.post(
 			if (file.startsWith('data:image')) {
 				// Handle base64 image string
 				uploadResponse = await cloudinary.uploader.upload(file, {
-					folder: 'uploads',
+					folder: 'asad_talks',
 					resource_type: 'image',
 				})
 			} else {
