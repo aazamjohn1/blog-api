@@ -73,12 +73,6 @@ blogRouter.post(
 		try {
 			const { title, author, content, tags, coverImage, slug } = req.body
 
-			// Validate required fields
-			if (!title || !author || !content) {
-				throw createHttpError(400, 'Title, author, and content are required')
-			}
-
-			// Handle cover image upload
 			let imageData = null
 			if (coverImage && typeof coverImage === 'string') {
 				try {
@@ -142,6 +136,85 @@ blogRouter.get(
 				throw createHttpError(404, 'Post not found')
 			}
 			res.json(post)
+		} catch (error) {
+			next(error)
+		}
+	}
+)
+
+// UpdateById
+blogRouter.put(
+	'/:id',
+	async (req: Request, res: Response, next: NextFunction) => {
+		try {
+			const { id } = req.params
+			const { title, author, content, tags, coverImage, slug } = req.body
+
+			// Find the post by ID
+			const post = await blogSchema.findById(id)
+			if (!post) {
+				throw createHttpError(404, 'Post not found')
+			}
+
+			// Handle cover image update if a new image is provided
+			if (coverImage && typeof coverImage === 'string') {
+				try {
+					// Delete the old image if it exists
+					if (post.coverImage?.publicId) {
+						await cloudinary.uploader.destroy(post.coverImage.publicId)
+					}
+
+					// Upload the new image
+					const uploadResponse = await cloudinary.uploader.upload(coverImage, {
+						folder: 'blog',
+					})
+
+					// Update the image data
+					post.coverImage = {
+						url: uploadResponse.secure_url,
+						publicId: uploadResponse.public_id,
+					}
+				} catch (error) {
+					console.error('Cloudinary upload error:', error)
+					throw createHttpError(500, 'Error uploading cover image')
+				}
+			}
+
+			// Update other fields
+			post.title = title
+			post.author = author
+			post.content = content
+			post.tags = tags || post.tags
+			post.slug = slug || post.slug
+			post.updatedAt = new Date()
+			post.coverImage = coverImage
+
+			// Save the updated post
+			const updatedPost = await post.save()
+			res.status(200).json(updatedPost)
+		} catch (error) {
+			next(error)
+		}
+	}
+)
+
+// delete by id
+blogRouter.delete(
+	'/:id',
+	async (req: Request, res: Response, next: NextFunction) => {
+		try {
+			const { id } = req.params
+			const post = await blogSchema.findByIdAndDelete(id)
+			if (!post) {
+				throw createHttpError(404, 'Post not found')
+			}
+
+			// Delete the cover image if it exists
+			if (post.coverImage?.publicId) {
+				await cloudinary.uploader.destroy(post.coverImage.publicId)
+			}
+
+			res.status(204).send()
 		} catch (error) {
 			next(error)
 		}
