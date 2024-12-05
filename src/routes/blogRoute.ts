@@ -110,6 +110,16 @@ blogRouter.post(
 	}
 )
 
+// getAllPosts
+blogRouter.get('/', async (req: Request, res: Response, next: NextFunction) => {
+	try {
+		const posts = await blogSchema.find({})
+		res.json(posts)
+	} catch (error) {
+		next(error)
+	}
+})
+
 // GetById
 blogRouter.get(
 	'/:id',
