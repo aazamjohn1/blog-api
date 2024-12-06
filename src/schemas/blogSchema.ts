@@ -48,7 +48,10 @@ const blogSchema = new mongoose.Schema(
 				postedAt: { type: Date, default: Date.now },
 			},
 		],
+
+		requestCount: { type: Number, default: 0 },
 	},
+
 	{
 		timestamps: true,
 	}

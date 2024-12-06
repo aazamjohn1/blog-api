@@ -5,7 +5,6 @@ import { CloudinaryStorage } from 'multer-storage-cloudinary'
 import createHttpError from 'http-errors'
 
 import blogSchema from '../schemas/blogSchema'
-
 const blogRouter = Router()
 
 cloudinary.config({
@@ -145,15 +144,19 @@ blogRouter.get(
 	'/slug/:slug',
 	async (req: Request, res: Response, next: NextFunction) => {
 		try {
-			const post = await blogSchema.findOneAndUpdate(
-				{ slug: req.params.slug },
-				{ $inc: { views: 1 } },
-				{ new: true }
-			)
+			const post = await blogSchema.findOne({ slug: req.params.slug })
 
 			if (!post) {
 				throw createHttpError(404, 'Post not found')
 			}
+
+			post.requestCount += 1
+
+			if (post.requestCount % 10 === 0) {
+				post.views += 1
+			}
+
+			await post.save()
 
 			res.json(post)
 		} catch (error) {
