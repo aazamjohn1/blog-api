@@ -21,8 +21,8 @@ const whitelist = ['http://localhost:3000']
 
 // Middlewares
 server.use(express.json())
-// server.use(cors({ origin: 'http://localhost:3000', credentials: true }))
-server.use(cors())
+server.use(cors({ origin: 'https://azamjonov.com', credentials: true }))
+// server.use(cors())
 server.use(cookieParser())
 
 // Routes
