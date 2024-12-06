@@ -125,7 +125,9 @@ blogRouter.get(
 	'/:id',
 	async (req: Request, res: Response, next: NextFunction) => {
 		try {
-			const post = await blogSchema.findById(req.params.id)
+			const post = await blogSchema.findById(req.params.id, {
+				$inc: { views: 1 },
+			})
 			if (!post) {
 				throw createHttpError(404, 'Post not found')
 			}
