@@ -145,10 +145,16 @@ blogRouter.get(
 	'/slug/:slug',
 	async (req: Request, res: Response, next: NextFunction) => {
 		try {
-			const post = await blogSchema.findOne({ slug: req.params.slug })
+			const post = await blogSchema.findOneAndUpdate(
+				{ slug: req.params.slug },
+				{ $inc: { views: 1 } },
+				{ new: true }
+			)
+
 			if (!post) {
 				throw createHttpError(404, 'Post not found')
 			}
+
 			res.json(post)
 		} catch (error) {
 			next(error)
