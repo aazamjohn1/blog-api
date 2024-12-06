@@ -1,40 +1,36 @@
 import { Schema, model } from 'mongoose'
 import { IUserModel } from '../types/local-users'
-import bcrypt from 'bcrypt'
 import { IUser } from '../types/userInterface'
 
 const UserSchema = new Schema<IUser>({
-    firstName: { type: String, required: true },
-    lastName: { type: String, required: true },
-    avatar: { type: String, default: function() { return `https://ui-avatars.com/api/?name=${this.firstName}+${this.lastName}`} },
-    email: { type: String, required: true, unique: true },
-    password: { type: String, required: true },
-    websites: [{ type: Schema.Types.ObjectId, ref: 'Website' }],
-    refreshToken: String
+	fullName: { type: String, required: true },
+	avatar: {
+		type: String,
+		default: function () {
+			return `https://ui-avatars.com/api/?name=${this.fullName}`
+		},
+	},
+	email: { type: String, required: true, unique: true },
+	password: { type: String, required: true },
+	lastLogin: {
+		type: Date,
+		default: Date.now,
+	},
+	isVerified: {
+		type: Boolean,
+		default: false,
+	},
+	resetPasswordToken: String,
+	resetPasswordExpiresAt: Date,
+	verificationToken: String,
+	verificationTokenExpiresAt: Date,
 })
 
-UserSchema.pre('save', async function (next) {
-    if (this.isModified('password')) {
-        const hashedPassword = await bcrypt.hash(this.password, 11)
-        this.password = hashedPassword
-    }
-    next()
-})
-
-UserSchema.methods.toJSON = function() {
-    const userObject = this.toObject()
-    delete userObject.__v
-    delete userObject.password
-    delete userObject.refreshToken
-    return userObject
-}
-
-UserSchema.statics.authenticate = async function (email, plainPassword) {
-    const user = await this.findOne({ email })
-    if (!user) return null
-    const passwordsMatch = await bcrypt.compare(plainPassword, user.password)
-    if (!passwordsMatch) return null
-    return user
+UserSchema.methods.toJSON = function () {
+	const userObject = this.toObject()
+	delete userObject.__v
+	delete userObject.password
+	return userObject
 }
 
 const UserModel = model<IUser, IUserModel>('User', UserSchema)
