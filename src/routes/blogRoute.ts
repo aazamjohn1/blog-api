@@ -158,7 +158,8 @@ blogRouter.put(
 	async (req: Request, res: Response, next: NextFunction) => {
 		try {
 			const { id } = req.params
-			const { title, author, content, tags, coverImage, slug } = req.body
+			const { title, author, content, tags, coverImage, slug, status } =
+				req.body
 
 			// Find the post by ID
 			const post = await blogSchema.findById(id)
@@ -198,6 +199,7 @@ blogRouter.put(
 			post.slug = slug || post.slug
 			post.updatedAt = new Date()
 			post.coverImage = coverImage
+			post.status = status || post.status
 
 			// Save the updated post
 			const updatedPost = await post.save()
@@ -225,6 +227,29 @@ blogRouter.delete(
 			}
 
 			res.status(204).send()
+		} catch (error) {
+			next(error)
+		}
+	}
+)
+// patch by id and update status
+blogRouter.patch(
+	'/status/:id',
+	async (req: Request, res: Response, next: NextFunction) => {
+		try {
+			const { id } = req.params
+			const { status } = req.body
+
+			const post = await blogSchema.findByIdAndUpdate(
+				id,
+				{ status },
+				{ new: true }
+			)
+			if (!post) {
+				throw createHttpError(404, 'Post not found')
+			}
+
+			res.status(200).json(post)
 		} catch (error) {
 			next(error)
 		}

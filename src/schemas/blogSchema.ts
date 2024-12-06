@@ -34,8 +34,8 @@ const blogSchema = new mongoose.Schema(
 		},
 		status: {
 			type: String,
-			enum: ['draft', 'published'],
-			default: 'draft',
+			enum: ['Draft', 'Published'],
+			default: 'Draft',
 		},
 		views: {
 			type: Number,
