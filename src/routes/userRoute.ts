@@ -7,7 +7,6 @@ import {
 	sendPasswordResetEmail,
 	sendResetSuccessEmail,
 	sendVerificationEmail,
-	sendWelcomeEmail,
 } from '../mailtrap/emails'
 import { verifyToken } from '../middlewares/authentication'
 const userRouter = Router()
