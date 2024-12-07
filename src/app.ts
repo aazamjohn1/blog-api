@@ -8,7 +8,6 @@ import blogRouter from './routes/blogRoute'
 
 const server = express()
 
-// Define the allowed origins
 const whitelist = [
 	'http://localhost:3000',
 	'https://azamjonov.com',
