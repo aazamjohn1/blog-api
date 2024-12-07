@@ -1,11 +1,21 @@
-import { MailtrapClient } from 'mailtrap'
+import nodemailer from 'nodemailer'
 
-export const mailtrapClient = new MailtrapClient({
-	// endpoint: 'https://send.api.mailtrap.io/',
-	token: '164c92e8c3066348099f0b12554c4de5',
-})
+const sendEmail = async (msg: any) => {
+	try {
+		const transporter = nodemailer.createTransport({
+			service: 'gmail',
+			auth: {
+				user: 'aazamjohn1@gmail.com', // Your Gmail address
+				pass: 'rqtb zdho zgqm qbcj', // Gmail app password
+			},
+		})
 
-export const sender = {
-	email: 'mailtrap@demomailtrap.com',
-	name: 'Asadbek',
+		const mailOptions = msg
+
+		const info = await transporter.sendMail(mailOptions)
+		console.log('Email sent: ' + info.response)
+	} catch (error) {
+		console.error('Error sending email:', error)
+	}
 }
+export default sendEmail
