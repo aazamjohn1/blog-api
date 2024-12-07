@@ -11,12 +11,10 @@ export const sendVerificationEmail = async (
 	email: string,
 	verificationToken: string
 ) => {
-	const recipient = [{ email }]
-
 	try {
 		const msg = {
 			from: sender,
-			to: recipient,
+			to: email,
 			subject: 'Verify your email',
 			html: VERIFICATION_EMAIL_TEMPLATE.replace(
 				'{verificationCode}',
@@ -38,12 +36,10 @@ export const sendPasswordResetEmail = async (
 	email: string,
 	resetURL: string
 ) => {
-	const recipient = [{ email }]
-
 	try {
 		const msg = {
 			from: sender,
-			to: recipient,
+			to: email,
 			subject: 'Reset your password',
 			html: PASSWORD_RESET_REQUEST_TEMPLATE.replace('{resetURL}', resetURL),
 			category: 'Password Reset',
@@ -58,12 +54,10 @@ export const sendPasswordResetEmail = async (
 }
 
 export const sendResetSuccessEmail = async (email: string) => {
-	const recipient = [{ email }]
-
 	try {
 		const msg = {
 			from: sender,
-			to: recipient,
+			to: email,
 			subject: 'Password Reset Successful',
 			html: PASSWORD_RESET_SUCCESS_TEMPLATE,
 			category: 'Password Reset',
