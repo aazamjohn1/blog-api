@@ -13,7 +13,7 @@ const whitelist = [
 	'http://localhost:3000',
 	'https://azamjonov.com',
 	'https://www.azamjonov.com',
-	'https://*.azamjonov.com',
+	'https://asmoul-husna.azamjonov.com',
 ]
 
 // CORS options
