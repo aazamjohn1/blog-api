@@ -6,6 +6,7 @@ export interface IUser {
 	password: string
 	lastLogin: Date
 	isVerified: boolean
+	role: string
 	verificationToken: string
 	verificationTokenExpiresAt: Date
 	resetPasswordToken: string

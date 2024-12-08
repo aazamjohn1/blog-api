@@ -20,6 +20,7 @@ const UserSchema = new Schema<IUser>({
 		type: Boolean,
 		default: false,
 	},
+	role: { type: String, default: 'user' },
 	resetPasswordToken: String,
 	resetPasswordExpiresAt: Date,
 	verificationToken: String,
