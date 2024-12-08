@@ -28,7 +28,9 @@ const corsOptions = {
 }
 
 // Middlewares
-server.use(express.json())
+server.use(express.json({ limit: '10mb' })) // Increase limit for JSON payloads
+server.use(express.urlencoded({ limit: '10mb', extended: true })) // Increase for URL-encoded
+
 server.use(cors(corsOptions))
 server.use(cookieParser())
 
