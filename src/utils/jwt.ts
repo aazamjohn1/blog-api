@@ -18,7 +18,7 @@ export const generateTokenAndSetCookie = (
 	res.cookie('token', token, {
 		httpOnly: true,
 		secure: NODE_ENV === 'production', // Use secure cookies in production
-		sameSite: NODE_ENV === 'production' ? 'strict' : 'strict',
+		sameSite: NODE_ENV === 'production' ? 'none' : 'strict',
 		maxAge: 1 * 24 * 60 * 60 * 1000, // 1 week
 	})
 
