@@ -231,7 +231,15 @@ userRouter.post(
 userRouter.post(
 	'/logout',
 	async (req: Request, res: Response): Promise<void> => {
-		res.clearCookie('token')
+		res.clearCookie('token', {
+			httpOnly: true,
+			secure: process.env.NODE_ENV === 'production', // Must match secure flag
+			sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax', // Must match sameSite
+			domain:
+				process.env.NODE_ENV === 'production'
+					? 'azamjonov.com'
+					: 'localhost:3000', // Must match domain if set
+		})
 		res.status(200).json({ success: true, message: 'Logged out successfully' })
 	}
 )
