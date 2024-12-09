@@ -237,7 +237,7 @@ userRouter.post(
 			sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax', // Must match sameSite
 			domain:
 				process.env.NODE_ENV === 'production'
-					? 'azamjonov.com'
+					? 'https://blog-api-three-nu.vercel.app'
 					: 'localhost:3000', // Must match domain if set
 		})
 		res.status(200).json({ success: true, message: 'Logged out successfully' })
