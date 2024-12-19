@@ -1,1 +1,1 @@
-Api
+Technologies used in the project:
