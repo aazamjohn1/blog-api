@@ -1,2 +1,3 @@
-Technologies used in the project:
 API
+Technologies used in the project:
+
