@@ -1,3 +1,3 @@
-<h1>API  Blog</h1>
+<h1>BlogAPI</h1>
 Technologies used in the project:
 
