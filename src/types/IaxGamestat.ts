@@ -11,7 +11,7 @@ export interface IBook {
 	title: string
 	author: string
 	highlight: boolean
-	year: Date
+	year: number
 	status: string
 	content: string
 }
