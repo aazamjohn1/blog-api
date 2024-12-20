@@ -7,7 +7,7 @@ const BookSchema = new Schema<IBook>(
 		highlight: { type: Boolean, required: true },
 		status: { type: String, required: true },
 		year: { type: Date, required: true },
-		content: { type: String, required: true },
+		content: { type: String },
 	},
 	{
 		timestamps: true,
