@@ -80,4 +80,18 @@ bookRouter.delete('/delete/:id', async (req: Request, res: Response) => {
 		res.status(500).json({ message: 'Server Error' })
 	}
 })
+
+// get by slug
+bookRouter.get('/slug/:slug', async (req: Request, res: Response) => {
+	const { slug } = req.params
+
+	try {
+		const book = await BookModel.findOne({ slug })
+		if (!book) return res.status(404).json({ message: 'Book not found' })
+		res.json(book)
+	} catch (error) {
+		console.error(error)
+		res.status(500).json({ message: 'Server Error' })
+	}
+})
 export default bookRouter

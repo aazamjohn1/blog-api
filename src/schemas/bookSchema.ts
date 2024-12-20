@@ -8,6 +8,11 @@ const BookSchema = new Schema<IBook>(
 		status: { type: String, required: true },
 		year: { type: Number, required: true },
 		content: { type: String },
+		slug: {
+			type: String,
+			unique: true,
+			trim: true,
+		},
 	},
 	{
 		timestamps: true,

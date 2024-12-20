@@ -14,4 +14,5 @@ export interface IBook {
 	year: number
 	status: string
 	content: string
+	slug: string
 }
