@@ -14,6 +14,20 @@ bookRouter.get('/all', async (req: Request, res: Response) => {
 	}
 })
 
+// get by id
+bookRouter.get('/:id', async (req: Request, res: Response) => {
+	const { id } = req.params
+
+	try {
+		const book = await BookModel.findById(id)
+		if (!book) return res.status(404).json({ message: 'Book not found' })
+		res.json(book)
+	} catch (error) {
+		console.error(error)
+		res.status(500).json({ message: 'Server Error' })
+	}
+})
+
 // add a new book
 bookRouter.post('/add', async (req: Request, res: Response) => {
 	const { title, author, status, highlight, year } = req.body
