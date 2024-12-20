@@ -5,3 +5,13 @@ export interface IAxGameInterface {
 	totalScore: number
 	lastGameDate: Date
 }
+
+export interface IBook {
+	_id: string
+	title: string
+	author: string
+	highlight: boolean
+	year: Date
+	status: string
+	content: string
+}

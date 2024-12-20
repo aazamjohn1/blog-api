@@ -5,6 +5,7 @@ import userRouter from './routes/userRoute'
 import axRouter from './routes/axRoute'
 import axGameRoute from './routes/axGameRoute'
 import blogRouter from './routes/blogRoute'
+import bookRouter from './routes/bookRoute'
 
 const server = express()
 
@@ -39,5 +40,6 @@ server.use('/user', userRouter)
 server.use('/blogs', blogRouter)
 server.use('/ax', axRouter)
 server.use('/ax', axGameRoute)
+server.use('/api/book', bookRouter)
 
 export { server }
