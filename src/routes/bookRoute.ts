@@ -30,7 +30,7 @@ bookRouter.get('/:id', async (req: Request, res: Response) => {
 
 // add a new book
 bookRouter.post('/add', async (req: Request, res: Response) => {
-	const { title, author, status, highlight, year } = req.body
+	const { title, author, status, highlight, year, slug } = req.body
 
 	try {
 		const newBook = new BookModel({
@@ -39,6 +39,7 @@ bookRouter.post('/add', async (req: Request, res: Response) => {
 			year,
 			highlight,
 			status,
+			slug,
 		})
 		await newBook.save()
 		res.json(newBook)
@@ -51,12 +52,12 @@ bookRouter.post('/add', async (req: Request, res: Response) => {
 // update a book
 bookRouter.put('/update/:id', async (req: Request, res: Response) => {
 	const { id } = req.params
-	const { title, author, status, highlight, year } = req.body
+	const { title, author, status, highlight, year, slug } = req.body
 
 	try {
 		const updatedBook = await BookModel.findByIdAndUpdate(
 			id,
-			{ title, author, year, highlight, status },
+			{ title, author, year, highlight, status, slug },
 			{ new: true }
 		)
 		if (!updatedBook) return res.status(404).json({ message: 'Book not found' })
