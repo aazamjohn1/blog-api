@@ -2,7 +2,7 @@
 Technologies used in the project:
 
 
-<h2>CLI commands to</h2>
+<h2>CLI commands to update</h2>
 npx ts-node src/cli/cli.ts update-slugs --env prod
 <br>
 npx ts-node src/cli/cli.ts update-slugs --env staging
