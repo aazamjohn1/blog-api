@@ -1,16 +1,8 @@
 export interface IUser {
-	_id: string
-	fullName: string
-	avatar: string
-	email: string
-	password: string
-	lastLogin: Date
-	isVerified: boolean
-	role: string
-	verificationToken: string
-	verificationTokenExpiresAt: Date
-	resetPasswordToken: string
-	resetPasswordExpiresAt: Date
+	telegramId: { type: String, unique: true, sparse: true },
+telegramCode: String,
+telegramCodeExpiresAt: Date,
+
 }
 
 export interface IPayload {
