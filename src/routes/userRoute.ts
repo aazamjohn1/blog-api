@@ -4,10 +4,13 @@ import UserModel from '../schemas/userSchema'
 
 const userRouter = Router()
 
-
-// User registration route
+// Login via Telegram code
 userRouter.post('/telegram-auth', async (req: Request, res: Response) => {
 	const { code } = req.body
+
+	if (!code) {
+		return res.status(400).json({ success: false, message: 'Code is required' })
+	}
 
 	try {
 		const user = await UserModel.findOne({
@@ -19,11 +22,13 @@ userRouter.post('/telegram-auth', async (req: Request, res: Response) => {
 			return res.status(400).json({ success: false, message: 'Invalid or expired code' })
 		}
 
+		// Clear the code and update login time
 		user.telegramCode = undefined
 		user.telegramCodeExpiresAt = undefined
 		user.lastLogin = new Date()
 		await user.save()
 
+		// Set cookie with token
 		generateTokenAndSetCookie(res, user._id)
 
 		res.status(200).json({
@@ -39,6 +44,5 @@ userRouter.post('/telegram-auth', async (req: Request, res: Response) => {
 		res.status(500).json({ success: false, message: 'Server error' })
 	}
 })
-
 
 export default userRouter
