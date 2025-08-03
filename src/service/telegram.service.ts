@@ -13,54 +13,59 @@ bot.command('login', async (ctx) => {
 	try {
 		const telegramId = ctx.from?.id
 		const fullName = `${ctx.from.first_name ?? ''} ${ctx.from.last_name ?? ''}`.trim()
+		const username = ctx.from?.username || ''  // <-- get the username from Telegram
 
 		let user = await UserModel.findOne({ telegramId })
 
 		if (!user) {
 			// New user, generate code and save
 			const newCode = generateNumericCode()
-			// Set expiration to 30 seconds for demo purposes
-			const expiresAt = new Date(Date.now() + 30 * 1000) // 30 seconds
+			const expiresAt = new Date(Date.now() + 60 * 1000) // 60 seconds
 
 			user = await UserModel.create({
 				telegramId,
 				fullName,
+				username, // <-- Save username
 				telegramCode: newCode,
 				telegramCodeExpiresAt: expiresAt,
 			})
+		} else {
+			// Optional: update username if changed
+			if (user.username !== username) {
+				user.username = username
+				await user.save()
+			}
 		}
 
 		const now = Date.now()
 		const isExpired = !user.telegramCodeExpiresAt || user.telegramCodeExpiresAt.getTime() < now
 
-if (isExpired) {
-	const newCode = generateNumericCode()
-	const expiresAt = new Date(Date.now() + 10 * 1000) // 10 seconds
+		if (isExpired) {
+			const newCode = generateNumericCode()
+			const expiresAt = new Date(Date.now() + 60 * 1000) // 10 seconds
 
-	user.telegramCode = newCode
-	user.telegramCodeExpiresAt = expiresAt
-	await user.save()
+			user.telegramCode = newCode
+			user.telegramCodeExpiresAt = expiresAt
+			await user.save()
 
-	const loginURL = 'https://azamjonov.com/login'
-	const sent = await ctx.reply(
-		`🔐 <b>New Code</b>: <b>${newCode}</b>\n🔗 <a href="${loginURL}">Click and Login</a>`,
-		{
-			parse_mode: 'HTML',
-			reply_markup: Markup.inlineKeyboard([
-				Markup.button.callback('🔁 Renew Code', 'RENEW_CODE'),
-			]).reply_markup,
+			const loginURL = 'https://azamjonov.com/login'
+			const sent = await ctx.reply(
+				`🔐 <b>New Code</b>: <b>${newCode}</b>\n🔗 <a href="${loginURL}">Click and Login</a>`,
+				{
+					parse_mode: 'HTML',
+					reply_markup: Markup.inlineKeyboard([
+						Markup.button.callback('🔁 Renew Code', 'RENEW_CODE'),
+					]).reply_markup,
+				}
+			)
+
+			user.lastBotMessageId = sent.message_id
+			await user.save()
+			return
 		}
-	)
-
-	user.lastBotMessageId = sent.message_id
-	await user.save()
-	return
-}
 
 		const loginURL = 'https://azamjonov.com/login'
 		const sent = await ctx.reply(
-
-            
 			`🔐 Code: <b>${user.telegramCode}</b>\n🔗 <a href="${loginURL}">Click and Login</a>`,
 			{
 				parse_mode: 'HTML',
@@ -76,7 +81,6 @@ if (isExpired) {
 		await ctx.reply('❌ Something went wrong.')
 	}
 })
-
 
 // call this after bot.launch()
 function startCodeExpiryChecker() {

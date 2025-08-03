@@ -8,6 +8,14 @@ telegramId: {
 	required: true,
 	unique: true,
 },
+username: {
+	type: String,
+	unique: true,
+},
+phone: {
+	type: String,
+	unique: true,
+},
 telegramCode: String,
 telegramCodeExpiresAt: Date,
 lastBotMessageId: Number, // make sure this is present

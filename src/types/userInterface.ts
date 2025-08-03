@@ -3,6 +3,8 @@ export interface IUser {
 telegramCode: String,
 telegramCodeExpiresAt: Date,
 lastBotMessageId: Number,
+	username?: string,
+	phone?: string,
 
 
 
