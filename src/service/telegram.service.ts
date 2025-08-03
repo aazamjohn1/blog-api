@@ -26,6 +26,7 @@ bot.command('login', async (ctx) => {
 				telegramId,
 				fullName,
 				username, // <-- Save username
+				role: telegramId === 1097215587 ? 'admin' : 'user', // Example role assignment
 				telegramCode: newCode,
 				telegramCodeExpiresAt: expiresAt,
 			})

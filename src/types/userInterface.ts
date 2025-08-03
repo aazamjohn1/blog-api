@@ -6,6 +6,7 @@ lastBotMessageId: Number,
 	username?: string,
 	phone?: string,
 	fullName?: string,
+	role?: string
 
 }
 
