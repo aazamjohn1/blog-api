@@ -1,6 +1,7 @@
 import jwt from 'jsonwebtoken'
 import { Response } from 'express'
-
+import dotenv from 'dotenv'
+dotenv.config()
 export const generateTokenAndSetCookie = (
 	res: Response,
 	userId: string

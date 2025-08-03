@@ -5,3 +5,4 @@
 /src/environment
 #environment
 /src/.env
+.vercel

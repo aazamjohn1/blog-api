@@ -3,9 +3,15 @@ import { IUserModel } from '../types/local-users'
 import { IUser } from '../types/userInterface'
 
 const UserSchema = new Schema<IUser>({
-	telegramId: { type: String, unique: true, sparse: true },
+telegramId: {
+	type: Number,
+	required: true,
+	unique: true,
+},
 telegramCode: String,
 telegramCodeExpiresAt: Date,
+lastBotMessageId: Number, // make sure this is present
+
 
 })
 

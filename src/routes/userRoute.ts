@@ -1,17 +1,9 @@
-import { NextFunction, Request, Response, Router } from 'express'
+import { Request, Response, Router } from 'express'
 import { generateTokenAndSetCookie } from '../utils/jwt'
 import UserModel from '../schemas/userSchema'
-import bcryptjs from 'bcryptjs'
-import crypto from 'crypto'
-import {
-	sendPasswordResetEmail,
-	sendResetSuccessEmail,
-	sendVerificationEmail,
-} from '../mailtrap/emails'
-import { verifyToken } from '../middlewares/authentication'
+
 const userRouter = Router()
 
-const { NODE_ENV } = process.env
 
 // User registration route
 userRouter.post('/telegram-auth', async (req: Request, res: Response) => {
