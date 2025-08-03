@@ -12,7 +12,7 @@ username: {
 	type: String,
 	unique: true,
 },
-phone: {
+fullName: {
 	type: String,
 	unique: true,
 },

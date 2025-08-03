@@ -5,6 +5,7 @@ telegramCodeExpiresAt: Date,
 lastBotMessageId: Number,
 	username?: string,
 	phone?: string,
+	fullName?: string,
 
 
 
