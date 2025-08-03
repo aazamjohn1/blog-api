@@ -19,7 +19,8 @@ bot.command('login', async (ctx) => {
 		if (!user) {
 			// New user, generate code and save
 			const newCode = generateNumericCode()
-			const expiresAt = new Date(Date.now() + 10 * 1000) // 10 seconds
+			// Set expiration to 30 seconds for demo purposes
+			const expiresAt = new Date(Date.now() + 30 * 1000) // 30 seconds
 
 			user = await UserModel.create({
 				telegramId,

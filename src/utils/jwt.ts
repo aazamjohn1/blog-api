@@ -13,7 +13,7 @@ export const generateTokenAndSetCookie = (
 	}
 
 	// Generate JWT token
-	const token = jwt.sign({ userId }, JWT_SECRET, { expiresIn: '7d' })
+	const token = jwt.sign({ userId }, JWT_SECRET, { expiresIn: '1min' })
 
 	// Set token as HTTP-only cookie
 	res.cookie('token', token, {
