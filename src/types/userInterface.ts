@@ -7,8 +7,6 @@ lastBotMessageId: Number,
 	phone?: string,
 	fullName?: string,
 
-
-
 }
 
 export interface IPayload {
