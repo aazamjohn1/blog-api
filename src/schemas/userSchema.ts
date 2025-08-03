@@ -16,6 +16,10 @@ fullName: {
 	type: String,
 	unique: true,
 },
+role: {
+	type: String,
+	enum: ['admin', 'user'],
+},	
 telegramCode: String,
 telegramCodeExpiresAt: Date,
 lastBotMessageId: Number, // make sure this is present
