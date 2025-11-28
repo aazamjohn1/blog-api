@@ -16,14 +16,14 @@ export function setAuthCookies(res: any, access: string, refresh: string) {
 	res.cookie("accessToken", access, {
 		httpOnly: true,
 		secure: true,
-		sameSite: "strict",
+		sameSite: "none",
 		maxAge: 15 * 60 * 1000, // 15 min
 	});
 
 	res.cookie("refreshToken", refresh, {
 		httpOnly: true,
 		secure: true,
-		sameSite: "strict",
+		sameSite: "none",
 		maxAge: 24 * 60 * 60 * 1000, // 1 day
 	});
 }
