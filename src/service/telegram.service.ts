@@ -1,173 +1,105 @@
 // src/service/telegramBot.ts
-import { Markup, Telegraf } from 'telegraf'
-import UserModel from '../schemas/userSchema'
+import { Telegraf } from "telegraf";
+import { buildExpiredMessage, buildLoginMessage } from "../utils/sendLoginMessage";
+import UserModel from "../schemas/userSchema";
+import { createOrUpdateLoginCode } from "./code.service";
 
+const bot = new Telegraf(process.env.TELEGRAM_TOKEN!);
 
-const bot = new Telegraf(process.env.TELEGRAM_TOKEN!)
-
-function generateNumericCode(): string {
-	return Math.floor(100000 + Math.random() * 900000).toString()
-}
-
-bot.command('login', async (ctx) => {
+// LOGIN command
+bot.command("login", async (ctx) => {
 	try {
-		const telegramId = ctx.from?.id
-		const fullName = `${ctx.from.first_name ?? ''} ${ctx.from.last_name ?? ''}`.trim()
-		const username = ctx.from?.username || ''  // <-- get the username from Telegram
+		const tg = ctx.from;
+		if (!tg) return;
 
-		let user = await UserModel.findOne({ telegramId })
+		const telegramId = tg.id;
+		const fullName = `${tg.first_name ?? ""} ${tg.last_name ?? ""}`.trim();
+		const username = tg.username ?? "";
+
+		let user = await UserModel.findOne({ telegramId });
 
 		if (!user) {
-			// New user, generate code and save
-			const newCode = generateNumericCode()
-			const expiresAt = new Date(Date.now() + 60 * 1000) // 60 seconds
-
 			user = await UserModel.create({
 				telegramId,
 				fullName,
-				username, // <-- Save username
-				role: telegramId === 1097215587 ? 'admin' : 'user', // Example role assignment
-				telegramCode: newCode,
-				telegramCodeExpiresAt: expiresAt,
-			})
-		} else {
-			// Optional: update username if changed
-			if (user.username !== username) {
-				user.username = username
-				await user.save()
-			}
+				username,
+				role: telegramId === 1097215587 ? "admin" : "user",
+			});
 		}
 
-		const now = Date.now()
-		const isExpired = !user.telegramCodeExpiresAt || user.telegramCodeExpiresAt.getTime() < now
-
-		if (isExpired) {
-			const newCode = generateNumericCode()
-			const expiresAt = new Date(Date.now() + 60 * 1000) // 10 seconds
-
-			user.telegramCode = newCode
-			user.telegramCodeExpiresAt = expiresAt
-			await user.save()
-
-			const loginURL = 'https://azamjonov.com/login'
-			const sent = await ctx.reply(
-				`🔐 <b>New Code</b>: <b>${newCode}</b>\n🔗 <a href="${loginURL}">Click and Login</a>`,
-				{
-					parse_mode: 'HTML',
-					reply_markup: Markup.inlineKeyboard([
-						Markup.button.callback('🔁 Renew Code', 'RENEW_CODE'),
-					]).reply_markup,
-				}
-			)
-
-			user.lastBotMessageId = sent.message_id
-			await user.save()
-			return
+		if (user.username !== username) {
+			user.username = username;
+			await user.save();
 		}
 
-		const loginURL = 'https://azamjonov.com/login'
-		const sent = await ctx.reply(
-			`🔐 Code: <b>${user.telegramCode}</b>\n🔗 <a href="${loginURL}">Click and Login</a>`,
-			{
-				parse_mode: 'HTML',
-				reply_markup: Markup.inlineKeyboard([
-					Markup.button.callback('🔁 Yangilash / Renew', 'RENEW_CODE'),
-				]).reply_markup,
-			}
-		)
-		user.lastBotMessageId = sent.message_id
-		await user.save()
-	} catch (error) {
-		console.error('Error in /login:', error)
-		await ctx.reply('❌ Something went wrong.')
+		const { code } = await createOrUpdateLoginCode(user);
+
+		const loginMsg = buildLoginMessage(code);
+		const sent = await ctx.reply(loginMsg.text, loginMsg.options);
+
+		user.lastBotMessageId = sent.message_id;
+		await user.save();
+	} catch (err) {
+		console.error(err);
+		ctx.reply("❌ Xatolik yuz berdi.");
 	}
-})
+});
 
-// call this after bot.launch()
+// AUTO EXPIRY CHECKER
 function startCodeExpiryChecker() {
 	setInterval(async () => {
-		const expiredUsers = await UserModel.find({
+		const expired = await UserModel.find({
 			telegramCodeExpiresAt: { $lt: new Date() },
 			lastBotMessageId: { $exists: true },
-		})
+		});
 
-		for (const user of expiredUsers) {
+		for (const user of expired) {
 			try {
+				const msg = buildExpiredMessage();
+
 				await bot.telegram.editMessageText(
 					user.telegramId,
-					user.lastBotMessageId,
+					user.lastBotMessageId!,
 					undefined,
-					'🔒 Kod muddati tugadi. <b>yangilash</b> tugmasini bosib, yangi kod oling.',
-					{
-						parse_mode: 'HTML',
-						reply_markup: Markup.inlineKeyboard([
-							Markup.button.callback('🔁 Yangilash', 'RENEW_CODE'),
-						]).reply_markup,
-					}
-				)
+					msg.text,
+					msg.options
+				);
 
-				// To prevent editing same message again
-				user.lastBotMessageId = undefined
-				await user.save()
+				user.lastBotMessageId = undefined;
+				await user.save();
 			} catch (err) {
-				console.error('Failed to update expired code message', err)
+				console.log("edit error:", err);
 			}
 		}
-	}, 3000) // Every 3 seconds
+	}, 3000);
 }
 
-
-
-bot.action('RENEW_CODE', async (ctx) => {
+// BUTTON: RENEW_CODE
+bot.action("RENEW_CODE", async (ctx) => {
 	try {
-		const telegramId = ctx.from?.id
-		const user = await UserModel.findOne({ telegramId })
+		const telegramId = ctx.from?.id;
+		const user = await UserModel.findOne({ telegramId });
 
-		if (!user) return ctx.reply('❌ User not found.')
+		if (!user) return ctx.reply("❌ User not found.");
 
-		const now = Date.now()
-		const isExpired = !user.telegramCodeExpiresAt || user.telegramCodeExpiresAt.getTime() < now
-
-		if (!isExpired) {
-			const remaining = Math.ceil(
-				(user.telegramCodeExpiresAt.getTime() - now) / 1000
-			)
-			return ctx.answerCbQuery(
-				`🟡 Current code is still valid for ${remaining} seconds.`,
-				{ show_alert: true }
-			)
+		if (user.telegramCodeExpiresAt && user.telegramCodeExpiresAt > new Date()) {
+			const remain = Math.ceil((user.telegramCodeExpiresAt.getTime() - Date.now()) / 1000);
+			return ctx.answerCbQuery(`🟡 Valid ${remain} seconds.`, { show_alert: true });
 		}
 
-		const newCode = generateNumericCode()
-		const expiresAt = new Date(Date.now() + 10 * 1000)
-		user.telegramCode = newCode
-		user.telegramCodeExpiresAt = expiresAt
-		await user.save()
+		const { code } = await createOrUpdateLoginCode(user);
+		const loginMsg = buildLoginMessage(code);
 
-		const loginURL = 'https://azamjonov.com/login'
-		const sent = await ctx.reply(
-			`🔐 Code: <b>${newCode}</b>\n🔗 <a href="${loginURL}">Click and Login</a>`,
-			{
-				parse_mode: 'HTML',
-				reply_markup: Markup.inlineKeyboard([
-					Markup.button.callback('🔁 Renew Code', 'RENEW_CODE'),
-				]).reply_markup,
-			}
-		)
-		user.lastBotMessageId = sent.message_id
-		await user.save()
-	} catch (error) {
-		console.error('Error in RENEW_CODE:', error)
-		await ctx.reply('❌ Could not renew code.')
+		const sent = await ctx.reply(loginMsg.text, loginMsg.options);
+		user.lastBotMessageId = sent.message_id;
+		await user.save();
+	} catch {
+		ctx.reply("❌ Cannot renew code.");
 	}
-})
-
-
-
-
+});
 
 export const launchTelegramBot = () => {
-	bot.launch()
-	console.log('🚀 Telegram bot is running...')
-	startCodeExpiryChecker()
-}
+	bot.launch();
+	console.log("🚀 Telegram bot running...");
+	startCodeExpiryChecker();
+};

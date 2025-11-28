@@ -1,6 +1,6 @@
-import mongoose from "mongoose";
-import  {server}  from "./app";
 import listEndpoints from "express-list-endpoints";
+import mongoose from "mongoose";
+import { server } from "./app";
 import { launchTelegramBot } from "./service/telegram.service";
 const port = process.env.PORT! || 3001;
 

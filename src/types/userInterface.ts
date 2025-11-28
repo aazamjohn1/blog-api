@@ -7,6 +7,9 @@ lastBotMessageId: Number,
 	phone?: string,
 	fullName?: string,
 	role?: string
+	accessToken: string
+	refreshToken: string
+	lastLogin: Date
 
 }
 
