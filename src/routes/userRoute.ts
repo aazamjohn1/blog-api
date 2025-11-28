@@ -135,8 +135,8 @@ router.post("/logout", async (req, res) => {
     }
 
     // clear cookies
-    res.clearCookie("accessToken", { httpOnly: true, sameSite: "strict", secure: process.env.NODE_ENV === "production" });
-    res.clearCookie("refreshToken", { httpOnly: true, sameSite: "strict", secure: process.env.NODE_ENV === "production" });
+    res.clearCookie("accessToken", { httpOnly: true, sameSite: "none",  path: "/", secure: process.env.NODE_ENV === "production" });
+    res.clearCookie("refreshToken", { httpOnly: true, sameSite: "none",  path: "/", secure: process.env.NODE_ENV === "production" });
 
     return res.json({ success: true });
   } catch (err) {
