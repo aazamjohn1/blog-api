@@ -27,3 +27,7 @@ export function setAuthCookies(res: any, access: string, refresh: string) {
 		maxAge: 24 * 60 * 60 * 1000, // 1 day
 	});
 }
+
+// if (require.main === module) {
+//   console.log("Auth service module");
+// }
