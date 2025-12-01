@@ -9,7 +9,9 @@ lastBotMessageId: Number,
 	role?: string
 	accessToken: string
 	refreshToken: string
-	lastLogin: Date
+	lastLogin: Date,
+	lastSentMessageId: number,
+lastSentMessageHash: String | null, 
 
 }
 

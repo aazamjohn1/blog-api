@@ -1,10 +1,12 @@
-import { Router, Request, Response, NextFunction } from 'express'
-import multer from 'multer'
 import { v2 as cloudinary } from 'cloudinary'
-import { CloudinaryStorage } from 'multer-storage-cloudinary'
+import { NextFunction, Request, Response, Router } from 'express'
 import createHttpError from 'http-errors'
+import multer from 'multer'
+import { CloudinaryStorage } from 'multer-storage-cloudinary'
 
 import blogSchema from '../schemas/blogSchema'
+import { notifyAllUsers } from '../service/telegram.service'
+
 const blogRouter = Router()
 
 cloudinary.config({
@@ -102,6 +104,10 @@ blogRouter.post(
 			})
 
 			await post.save()
+		await notifyAllUsers(
+  `<img src="${post.coverImage?.url}" /> \n\n📌 <b>${post.title}</b>\n\n🔗 <a href="https://blog.azamjonov.io/blog/${post.slug}">blog.azamjonov.io/blog/${post.slug}</a>`,
+  { parse_mode: "HTML" }
+);
 			res.status(201).json(post)
 		} catch (error) {
 			next(error)

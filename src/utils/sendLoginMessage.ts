@@ -17,13 +17,15 @@ export function buildLoginMessage(code: string) {
 }
 
 export function buildExpiredMessage() {
-	return {
-		text: `🔒 Kod muddati tugadi.\n<b>Yangilash</b> tugmasini bosing.`,
-		options: {
-			parse_mode: "HTML" as ParseMode,
-			reply_markup: Markup.inlineKeyboard([
-				Markup.button.callback("🔁 Yangilash", "RENEW_CODE"),
-			]).reply_markup,
-		},
-	};
+  return {
+    text: "⛔️ <b>Kod muddati tugadi!</b>\n\n♻ Yangilash tugmasini bosing.",
+    options: {
+      parse_mode: "HTML",
+      reply_markup: {
+        inline_keyboard: [
+          [{ text: "♻ Kodni yangilash", callback_data: "RENEW_CODE" }]
+        ]
+      }
+    }
+  };
 }

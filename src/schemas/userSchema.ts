@@ -35,10 +35,8 @@ const UserSchema = new Schema<IUser>(
 			default: null,
 		},
 
-		lastBotMessageId: {
-			type: Number,
-			default: null,
-		},
+	lastSentMessageId: { type: Number, default: null },
+	lastSentMessageHash: { type: String, default: null },
     accessToken: {
 			type: String,
 			default: null
