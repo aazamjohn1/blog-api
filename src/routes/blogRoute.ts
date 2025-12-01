@@ -263,10 +263,12 @@ blogRouter.patch(
 			if (!post) {
 				throw createHttpError(404, 'Post not found')
 			}
-			await notifyAllUsers(
-  `<img src="${post.coverImage?.url}" /> \n\n📌 <b>${post.title}</b>\n\n🔗 <a href="https://blog.azamjonov.io/blog/${post.slug}">blog.azamjonov.io/blog/${post.slug}</a>`,
-  { parse_mode: "HTML" }
-);
+			if (status === 'Published') {
+						await notifyAllUsers(
+				`<img src="${post.coverImage?.url}" /> \n\n📌 <b>${post.title}</b>\n\n🔗 <a href="https://blog.azamjonov.io/blog/${post.slug}">blog.azamjonov.io/blog/${post.slug}</a>`,
+				{ parse_mode: "HTML" }
+			);
+			}
 			res.status(200).json(post)
 		} catch (error) {
 			next(error)
