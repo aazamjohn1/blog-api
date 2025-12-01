@@ -104,10 +104,6 @@ blogRouter.post(
 			})
 
 			await post.save()
-		await notifyAllUsers(
-  `<img src="${post.coverImage?.url}" /> \n\n📌 <b>${post.title}</b>\n\n🔗 <a href="https://blog.azamjonov.io/blog/${post.slug}">blog.azamjonov.io/blog/${post.slug}</a>`,
-  { parse_mode: "HTML" }
-);
 			res.status(201).json(post)
 		} catch (error) {
 			next(error)
@@ -222,6 +218,10 @@ blogRouter.put(
 
 			// Save the updated post
 			const updatedPost = await post.save()
+			await notifyAllUsers(
+  `<img src="${updatedPost.coverImage?.url}" /> \n\n📌 <b>${updatedPost.title}</b>\n\n🔗 <a href="https://blog.azamjonov.io/blog/${updatedPost.slug}">blog.azamjonov.io/blog/${updatedPost.slug}</a>`,
+  { parse_mode: "HTML" }
+);
 			res.status(200).json(updatedPost)
 		} catch (error) {
 			next(error)
