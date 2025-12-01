@@ -11,8 +11,8 @@ const server = express()
 
 const whitelist = [
 	'http://localhost:3000',
-	'https://azamjonov.com',
-	'https://www.azamjonov.com',
+	'https://blog.azamjonov.io',
+	'https://www.blog.azamjonov.io',
 ]
 
 // CORS options

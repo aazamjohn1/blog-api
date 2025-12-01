@@ -1,7 +1,7 @@
 // src/service/telegramBot.ts
 import { Telegraf } from "telegraf";
-import { buildExpiredMessage, buildLoginMessage } from "../utils/sendLoginMessage";
 import UserModel from "../schemas/userSchema";
+import { buildExpiredMessage, buildLoginMessage } from "../utils/sendLoginMessage";
 import { createOrUpdateLoginCode } from "./code.service";
 
 const bot = new Telegraf(process.env.TELEGRAM_TOKEN!);
@@ -10,6 +10,7 @@ const bot = new Telegraf(process.env.TELEGRAM_TOKEN!);
 bot.command("login", async (ctx) => {
 	try {
 		const tg = ctx.from;
+		console.log("Telegram login attempt from:", tg);
 		if (!tg) return;
 
 		const telegramId = tg.id;

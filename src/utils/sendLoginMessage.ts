@@ -3,10 +3,10 @@ import { Markup } from "telegraf";
 import type { ParseMode } from "telegraf/typings/core/types/typegram";
 
 export function buildLoginMessage(code: string) {
-	const loginURL = "https://azamjonov.com/login";
+	const loginURL = "https://blog.azamjonov.io/login";
 
 	return {
-		text: `🔐 Code: <b>${code}</b>\n🔗 Click and Login\n <a href="${loginURL}">azamjonov.com/login </a>`,
+		text: `🔐 Code: <b>${code}</b>\n🔗 Click and Login\n <a href="${loginURL}">blog.azamjonov.io/login </a>`,
 		options: {
 			parse_mode: "HTML" as ParseMode,
 			reply_markup: Markup.inlineKeyboard([
