@@ -39,6 +39,7 @@ export async function notifyAllUsers(text: string, extra?: any) {
 
         // Remove the <img> tag from text for caption
         const caption = text.replace(/<img\s+src="(.+?)"\s*\/?>/i, "").trim();
+       bot.telegram.getMe().then(info => console.log("Running bot:", info.username));
 
         await bot.telegram.sendPhoto(
           user.telegramId as any,
@@ -46,6 +47,8 @@ export async function notifyAllUsers(text: string, extra?: any) {
           { caption, ...extra }
         );
       } else {
+        bot.telegram.getMe().then(info => console.log("Running bot:", info.username));
+
         await bot.telegram.sendMessage(user.telegramId as any, text, extra);
       }
     } catch (err) {
@@ -154,7 +157,7 @@ bot.command("login", async (ctx) => {
 				telegramId,
 				fullName,
 				username,
-				role: telegramId === 1097215587 ? "admin" : "user",
+				role: telegramId === 687363848 ? "admin" : "user",
 			});
 		}
 
