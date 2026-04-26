@@ -6,7 +6,7 @@ import BookModel from "../schemas/bookSchema";
 import UserModel from "../schemas/userSchema";
 import { buildExpiredMessage, buildLoginMessage } from "../utils/sendLoginMessage";
 import { createOrUpdateLoginCode } from "./code.service";
-import { mainMenuKeyboard } from "./tg-helper";
+import { listAllUsers, mainMenuKeyboard } from "./tg-helper";
 const bot = new Telegraf(process.env.TELEGRAM_TOKEN!);
 
 // at top of file
@@ -53,6 +53,11 @@ export async function notifyAllUsers(text: string, extra?: any) {
     }
   }
 }
+
+bot.command("listusers", async (ctx) => {
+  const adminId = ctx.from?.id;
+  await listAllUsers(adminId as any, bot);
+});
 
 // start command
 
