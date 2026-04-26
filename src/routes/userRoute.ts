@@ -6,31 +6,31 @@ import { issueTokens, setAuthCookies } from "../service/auth.service";
 
 const router = Router();
 
-const ADMIN_EMAIL = "adminasadbek";
+const ADMIN_USERNAME = "adminasadbek";
 const ADMIN_PASSWORD = "adminazamjonov";
 
 router.post("/login", async (req: AuthRequest, res) => {
   try {
-    const { email, password } = req.body;
+    const { username, password } = req.body;
 
-    if (!email || !password) {
+    if (!username || !password) {
       return res.status(400).json({
         success: false,
-        message: "Email and password are required",
+        message: "username and password are required",
       });
     }
 
-    if (email !== ADMIN_EMAIL || password !== ADMIN_PASSWORD) {
+    if (username !== ADMIN_USERNAME || password !== ADMIN_PASSWORD) {
       return res.status(401).json({
         success: false,
         message: "Invalid credentials",
       });
     }
 
-    let user = await UserModel.findOne({ email: ADMIN_EMAIL });
+    let user = await UserModel.findOne({ username: ADMIN_USERNAME });
     if (!user) {
       user = await UserModel.create({
-        email: ADMIN_EMAIL,
+        username: ADMIN_USERNAME,
         password: ADMIN_PASSWORD,
         fullName: "Admin",
         role: "admin",

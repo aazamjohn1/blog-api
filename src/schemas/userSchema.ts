@@ -3,7 +3,7 @@ import { IUser } from "../types/userInterface";
 
 const UserSchema = new Schema<IUser>(
   {
-    email: {
+    username: {
       type: String,
       required: true,
       unique: true,
