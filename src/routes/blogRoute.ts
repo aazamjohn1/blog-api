@@ -5,7 +5,6 @@ import multer from 'multer'
 import { CloudinaryStorage } from 'multer-storage-cloudinary'
 
 import blogSchema from '../schemas/blogSchema'
-import { notifyAllUsers } from '../service/telegram.service'
 
 const blogRouter = Router()
 
@@ -262,12 +261,6 @@ blogRouter.patch(
 			)
 			if (!post) {
 				throw createHttpError(404, 'Post not found')
-			}
-			if (status === 'Published') {
-						await notifyAllUsers(
-				`<img src="${post.coverImage?.url}" /> \n\n📌 <b>${post.title}</b>\n\n🔗 <a href="https://blog.azamjonov.io/blog/${post.slug}">blog.azamjonov.io/blog/${post.slug}</a>`,
-				{ parse_mode: "HTML" }
-			);
 			}
 			res.status(200).json(post)
 		} catch (error) {

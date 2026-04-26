@@ -1,4 +1,3 @@
-// src/routes/userRoutes.ts
 import { Router } from "express";
 import jwt from "jsonwebtoken";
 import { AuthRequest, authMiddleware } from "../middlewares/authentication";
@@ -7,66 +6,59 @@ import { issueTokens, setAuthCookies } from "../service/auth.service";
 
 const router = Router();
 
+const ADMIN_EMAIL = "adminasadbek";
+const ADMIN_PASSWORD = "adminazamjonov";
 
-/**
- * POST user/tlegram-auth
- */
+router.post("/login", async (req: AuthRequest, res) => {
+  try {
+    const { email, password } = req.body;
 
+    if (!email || !password) {
+      return res.status(400).json({
+        success: false,
+        message: "Email and password are required",
+      });
+    }
 
-router.post("/telegram-auth", async (req:AuthRequest , res) => {
-	try {
-		const { code } = req.body;
-		if (!code) {
-			return res.status(400).json({
-				success: false,
-				message: "Code is required",
-			});
-		}
+    if (email !== ADMIN_EMAIL || password !== ADMIN_PASSWORD) {
+      return res.status(401).json({
+        success: false,
+        message: "Invalid credentials",
+      });
+    }
 
-		const user = await UserModel.findOne({
-			telegramCode: code,
-			telegramCodeExpiresAt: { $gt: new Date() },
-		});
+    let user = await UserModel.findOne({ email: ADMIN_EMAIL });
+    if (!user) {
+      user = await UserModel.create({
+        email: ADMIN_EMAIL,
+        password: ADMIN_PASSWORD,
+        fullName: "Admin",
+        role: "admin",
+      });
+    }
 
-		if (!user) {
-			return res.status(400).json({
-				success: false,
-				message: "Invalid or expired code",
-			});
-		}
+    user.lastLogin = new Date();
+    await user.save();
 
-		// Invalidate code after login
-		user.lastLogin = new Date();
-
-		await user.save();
-
-		// Generate Access + Refresh tokens
-		const { accessToken, refreshToken } = await issueTokens(user);
-
-		// Set cookies
-		setAuthCookies(res, accessToken, refreshToken);
+    const { accessToken, refreshToken } = await issueTokens(user);
+    setAuthCookies(res, accessToken, refreshToken);
 
     return res.status(200).json({
       success: true,
       message: "Logged in successfully",
       user: {
-        ...user.toObject(),
-        password: undefined,
-        accessToken: undefined,
+        ...user.toJSON(),
       },
     });
-	} catch (error) {
-		console.error("Telegram auth error:", error);
-		return res
-			.status(500)
-			.json({ success: false, message: "Server error during Telegram authentication" });
-	}
-})
+  } catch (error) {
+    console.error("Login error:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Server error during login",
+    });
+  }
+});
 
-/**
- * GET /user/me
- * Protected — authMiddleware tekshiradi
- */
 router.get("/me", authMiddleware, async (req: AuthRequest, res) => {
   return res.status(200).json({
     success: true,
@@ -74,14 +66,9 @@ router.get("/me", authMiddleware, async (req: AuthRequest, res) => {
   });
 });
 
-/**
- * POST /user/refresh-token
- * Use refresh token cookie to rotate / issue new access token
- */
 router.post("/refresh-token", async (req, res) => {
   try {
     const token = req.cookies?.refreshToken;
-		console.log("Refresh token received:", token);
     if (!token) return res.status(401).json({ success: false, message: "No refresh token" });
 
     let decoded: any;
@@ -95,15 +82,11 @@ router.post("/refresh-token", async (req, res) => {
     const user = await UserModel.findById(userId);
     if (!user) return res.status(401).json({ success: false, message: "No user" });
 
-    // Check stored refresh token (simple rotation strategy)
     if (!user.refreshToken || user.refreshToken !== token) {
       return res.status(401).json({ success: false, message: "Refresh token mismatch" });
     }
 
-    // Issue new tokens (keep refresh same or rotate — here we rotate)
-    const { accessToken, refreshToken } = await issueTokens(user); // issueTokens should save refreshToken to DB
-
-    // Set cookies (updates both)
+    const { accessToken, refreshToken } = await issueTokens(user);
     setAuthCookies(res, accessToken, refreshToken);
 
     return res.json({ success: true });
@@ -113,15 +96,10 @@ router.post("/refresh-token", async (req, res) => {
   }
 });
 
-/**
- * POST /user/logout
- * Clears cookies and removes refreshToken in DB
- */
 router.post("/logout", async (req, res) => {
   try {
     const token = req.cookies?.refreshToken;
     if (token) {
-      // try remove refreshToken from DB if present
       let decoded: any;
       try {
         decoded = jwt.verify(token, process.env.JWT_REFRESH_SECRET!);
@@ -134,9 +112,8 @@ router.post("/logout", async (req, res) => {
       }
     }
 
-    // clear cookies
-    res.clearCookie("accessToken", { httpOnly: true, sameSite: "none",  path: "/", secure: process.env.NODE_ENV === "production" });
-    res.clearCookie("refreshToken", { httpOnly: true, sameSite: "none",  path: "/", secure: process.env.NODE_ENV === "production" });
+    res.clearCookie("accessToken", { httpOnly: true, sameSite: "none", path: "/", secure: process.env.NODE_ENV === "production" });
+    res.clearCookie("refreshToken", { httpOnly: true, sameSite: "none", path: "/", secure: process.env.NODE_ENV === "production" });
 
     return res.json({ success: true });
   } catch (err) {
